@@ -1,0 +1,15 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: local-example-com
+  namespace: default
+spec:
+  secretName: local-example-com-staging-tls
+  issuerRef:
+    name: letsencrypt-staging
+    kind: ClusterIssuer
+  commonName: "*.stage.jussmor.com"
+  dnsNames:
+  - "stage.jussmor.com"
+  - "*.stage.jussmor.com"
