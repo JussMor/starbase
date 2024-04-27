@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/htmx.org@1.9.9"></script>
+</head>
+<body>
+    <h1>{{message}}</h1>
+    <a href="/test">Go page Test</a>
+    
+</body>
+</html>
+
+
+<button hx-get="/test" hx-trigger="click" hx-target="#parent-div" hx-swap="outerHTML">
+    Click Me!
+</button>
+
+<div id="parent-div"></div>

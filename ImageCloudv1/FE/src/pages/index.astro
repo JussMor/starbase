@@ -1,0 +1,145 @@
+---
+import Layout from '../layouts/Layout.astro';
+// import { isHXRequest } from '../headers';
+
+
+// if (isHXRequest(Astro.request)) {
+//   return Astro.redirect(
+//     `https://jsonplaceholder.typicode.com/users?${Astro.url.searchParams.toString()}`,
+//     302
+//   );
+// }
+
+---
+
+<script>
+const pizzasOrdered = [];
+const eventSource = new EventSource('http://localhost:9000/stream/pizza_events');
+
+eventSource.onmessage = (event) => {
+    console.log('Message from server:', JSON.parse(event.data));
+    let data = JSON.parse(event.data);
+    const pizza = JSON.parse(data.Ok);
+
+    pizzasOrdered.push(pizza);
+    // Handle the SSE message as needed
+    console.log(pizzasOrdered);
+
+    // Update the DOM with the latest pizzasOrdered
+    updatePizzasList();
+};
+
+eventSource.onerror = (error) => {
+    console.error('Error:', error);
+    eventSource.close();
+};
+
+function updatePizzasList() {
+    const addpizzas = document.getElementById('testP');
+	const testLeng = document.getElementById('testLeng');
+
+	testLeng.innerHTML = `<li style='color:white'>
+			${pizzasOrdered.length}
+		</li>`
+    addpizzas.innerHTML = `
+        <ul>
+            ${pizzasOrdered.map((e) => (
+                `<li style="color:white">${e.data}</li>`
+            )).join('')}
+        </ul>`;
+}
+
+</script>
+
+<Layout title="Welcome to Astro.">
+	<main>
+		<button hx-get="http://localhost:8080/"
+		    hx-trigger="click"
+		    hx-target="#parent-div"
+		    hx-swap="innerHTML"
+		>
+		    Click Me!
+		</button>
+		<div id="parent-div"></div>
+	</main>
+
+	  <div hx-ext="client-side-templates">
+    <button hx-get="https://jsonplaceholder.typicode.com/users"
+            hx-swap="innerHTML"
+            hx-target="#content"
+            mustache-array-template="foo">
+      Click Me
+    </button>
+
+	<p id="testLeng"></p>
+	<p id="testP"> </p>
+
+    <p id="content">Start</p>
+
+	<img src="http://localhost:8080/images/6599aa42f6b6925e741f0851" width="500"/>
+    <!-- <template id="foo">
+      {{#data}}
+      <p> {{name}} at {{email}} is with {{company.name}}</p>
+      {{/data}}
+    </template> -->
+  </div>
+</Layout>
+
+<style>
+	main {
+		margin: auto;
+		padding: 1rem;
+		width: 800px;
+		max-width: calc(100% - 2rem);
+		color: white;
+		font-size: 20px;
+		line-height: 1.6;
+	}
+	.astro-a {
+		position: absolute;
+		top: -32px;
+		left: 50%;
+		transform: translatex(-50%);
+		width: 220px;
+		height: auto;
+		z-index: -1;
+	}
+	h1 {
+		font-size: 4rem;
+		font-weight: 700;
+		line-height: 1;
+		text-align: center;
+		margin-bottom: 1em;
+	}
+	.text-gradient {
+		background-image: var(--accent-gradient);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-size: 400%;
+		background-position: 0%;
+	}
+	.instructions {
+		margin-bottom: 2rem;
+		border: 1px solid rgba(var(--accent-light), 25%);
+		background: linear-gradient(rgba(var(--accent-dark), 66%), rgba(var(--accent-dark), 33%));
+		padding: 1.5rem;
+		border-radius: 8px;
+	}
+	.instructions code {
+		font-size: 0.8em;
+		font-weight: bold;
+		background: rgba(var(--accent-light), 12%);
+		color: rgb(var(--accent-light));
+		border-radius: 4px;
+		padding: 0.3em 0.4em;
+	}
+	.instructions strong {
+		color: rgb(var(--accent-light));
+	}
+	.link-card-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
+		gap: 2rem;
+		padding: 0;
+	}
+</style>
