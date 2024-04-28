@@ -1,3 +1,0 @@
-kubectl apply -f server_one.yml \
-              -f server_one_services.yml \
-              -f server_one_ingress.yml
